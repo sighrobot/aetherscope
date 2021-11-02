@@ -1,47 +1,90 @@
-import { FC, useState } from "react";
-import { ethers } from "ethers";
-import { Erc20__factory } from "../contracts/types";
+import React from "react";
 
-const Index: FC = () => {
-  const [provider, setProvider] = useState<ethers.providers.Web3Provider>();
-  const [account, setAccount] = useState<string>();
-  const [tokenBalance, setTokenBalance] = useState<string>();
+const getStuff = async (url: string) => {
+  const fetched = await fetch(url);
+  const json = await fetched.json();
 
-  const connect = async () => {
-    if (!window.ethereum?.request) {
-      alert("MetaMask is not installed!");
-      return;
-    }
+  return json;
+};
 
-    const provider = new ethers.providers.Web3Provider(window.ethereum);
-    const accounts = await window.ethereum.request({
-      method: "eth_requestAccounts",
-    });
+const Index = () => {
+  // const [provider, setProvider] = useState<ethers.providers.Web3Provider>();
+  // const [account, setAccount] = useState<string>();
+  const [holders, setHolders] = React.useState([]);
+  const [contractAddr, setContractAddr] = React.useState("");
+  const [loading, setLoading] = React.useState(false);
 
-    setProvider(provider);
-    setAccount(accounts[0]);
-  };
+  const handleChangeContractAddr = (e) => setContractAddr(e.target.value);
 
-  const getTokenBalance = async () => {
-    if (provider && account) {
-      const TOKEN_ADDR = "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48";
-      const token = Erc20__factory.connect(TOKEN_ADDR, provider.getSigner());
+  const handleSubmit = React.useCallback(
+    async (e) => {
+      e.preventDefault();
+      setLoading(true);
+      const h = await getStuff(`/api/holders/${contractAddr}`);
 
-      const rawBalance = await token.balanceOf(account);
-      const decimals = await token.decimals();
+      setHolders(h);
+      setLoading(false);
+    },
+    [contractAddr]
+  );
 
-      const balance = ethers.utils.formatUnits(rawBalance, decimals);
-      setTokenBalance(balance);
-    }
-  };
+  const totalTxs = React.useMemo(
+    () => holders.reduce((acc, h) => acc + h.numTxs, 0),
+    [holders]
+  );
+
+  // const connect = async () => {
+  //   if (!window.ethereum?.request) {
+  //     alert("MetaMask is not installed!");
+  //     return;
+  //   }
+
+  //   const provider = new ethers.providers.Web3Provider(window.ethereum);
+  //   const accounts = await window.ethereum.request({
+  //     method: "eth_requestAccounts",
+  //   });
+
+  //   setProvider(provider);
+  //   setAccount(accounts[0]);
+  // };
 
   return (
-    <>
-      <button onClick={connect}>Connect</button>
-      <p>Account: {account}</p>
-      <button onClick={getTokenBalance}>Get Token Balance</button>
-      <p>Token Balance: {tokenBalance}</p>
-    </>
+    <main>
+      {/* <button onClick={connect}>Connect</button> */}
+      {/* <p>Account: {account}</p> */}
+      <header>
+        <form onSubmit={handleSubmit}>
+          <input
+            type="text"
+            onChange={handleChangeContractAddr}
+            value={contractAddr}
+          />
+          <button type="submit">Find Tokens</button>
+        </form>
+      </header>
+
+      {loading ? (
+        "Loading..."
+      ) : (
+        <table>
+          <tbody>
+            {holders.map((h, idx) => {
+              return (
+                <tr key={h.contractAddress}>
+                  <td style={{ textAlign: "right" }}>{idx + 1}.</td>
+                  <td>{h.tokenSymbol}</td>
+                  <td>{h.tokenName}</td>
+
+                  <td>
+                    <meter value={h.numTxs / totalTxs} />
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      )}
+    </main>
   );
 };
 

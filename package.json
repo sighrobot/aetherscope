@@ -12,12 +12,17 @@
     "typechain": "typechain --target ethers-v5 --outDir ./contracts/types './contracts/*.json'"
   },
   "dependencies": {
+    "@nivo/core": "^0.74.0",
+    "@nivo/funnel": "^0.74.0",
+    "@nivo/line": "^0.74.0",
+    "jsdom": "^18.0.0",
     "next": "^10.0.4",
     "react": "^17.0.1",
     "react-dom": "^17.0.1"
   },
   "devDependencies": {
     "@typechain/ethers-v5": "^6.0.0",
+    "@types/jsdom": "^16.2.13",
     "@types/node": "^14.14.17",
     "@types/react": "^17.0.0",
     "@typescript-eslint/eslint-plugin": "^4.11.1",
