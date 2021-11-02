@@ -2,7 +2,7 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import React from "react";
 
-const getStuff = async (url: string) => {
+const getStuff = async (url) => {
   const fetched = await fetch(url);
   const json = await fetched.json();
 

@@ -1,15 +1,16 @@
+import fetch from "node-fetch";
 const jsdom = require("jsdom");
 
 const { JSDOM } = jsdom;
 
-const getStuff = async (url: string) => {
+const getStuff = async (url) => {
   const fetched = await fetch(url);
   const json = await fetched.json();
 
   return json;
 };
 
-const getHolders = async (contractAddr: string) => {
+const getHolders = async (contractAddr) => {
   const fetched = await fetch(
     `https://etherscan.io/token/tokenholderchart/${contractAddr}`
   );
@@ -51,7 +52,7 @@ const getHolders = async (contractAddr: string) => {
   ];
 };
 
-const getERC20Txs = async (address: string) =>
+const getERC20Txs = async (address) =>
   getStuff(
     `https://api.etherscan.io/api?module=account&action=tokentx&address=${address}&startblock=0&endblock=99999999&page=1&offset=10000&sort=desc&apikey=${process.env.ETHERSCAN}`
   );
@@ -77,8 +78,8 @@ export default async (req, res) => {
     ercsByAddr.push(erc);
   }
 
-  const tokens: { [key: string]: {} } = {};
-  const map: { [key: string]: number } = {};
+  const tokens = {};
+  const map = {};
 
   ercsByAddr.forEach((ercsForAddr) => {
     if (Array.isArray(ercsForAddr.result)) {
