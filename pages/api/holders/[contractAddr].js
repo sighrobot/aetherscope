@@ -48,7 +48,7 @@ const getHolders = async (contractAddr) => {
       });
       return obj;
     }),
-    {},
+    { text },
   ];
 };
 
@@ -119,5 +119,10 @@ export default async (req, res) => {
       });
     });
 
-  return res.status(200).json({ results, stats: { totalPct } });
+  return res
+    .status(200)
+    .json({
+      results,
+      stats: { totalPct, topTen, contractAddr, text: stats.text },
+    });
 };
