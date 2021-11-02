@@ -12,11 +12,8 @@
     "typechain": "typechain --target ethers-v5 --outDir ./contracts/types './contracts/*.json'"
   },
   "dependencies": {
-    "@nivo/core": "^0.74.0",
-    "@nivo/funnel": "^0.74.0",
-    "@nivo/line": "^0.74.0",
     "jsdom": "^18.0.0",
-    "next": "^10.0.4",
+    "next": "^12.0.2",
     "react": "^17.0.1",
     "react-dom": "^17.0.1"
   },
